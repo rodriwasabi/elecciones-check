@@ -3,13 +3,13 @@ import requests
 
 baseUrl = "https://trep.oep.org.bo/resul/imgActa/{0}.jpg"
 
-def downloadImages(tables):
+def downloadImages(group, tables):
     tablesWithError = []
     for table in tables:
         tableNumber = table.replace('\n', '')
         if re.search('^[0-9]+$', tableNumber): 
             getUrl = baseUrl.format(tableNumber)
-            imageFile = './results/{0}.jpg'.format(tableNumber)
+            imageFile = './results/{0}/{1}.jpg'.format(group, tableNumber)
             print getUrl
             r = requests.get(getUrl, stream=True)
             if r.status_code == 200:
@@ -38,13 +38,21 @@ def scrap(args):
         for file in f:
             if '.mesa' in file:
                 files.append(os.path.join(r, file))
+                fileName = "{}".format(file.replace('.mesa', ''))
+                pathName = "./results/{}".format(fileName)
+                if not os.path.exists(pathName):
+                    os.mkdir(pathName)
 
     for file in files:
+        group = os.path.basename(file).replace('.mesa', '')
+        print "GRUPO: {}".format(group)
+        print "---------------------------------------------"
+
         with open(file) as fp:
             tables = fp.readlines()
 
         # r=root, d=directories, f = files
-        tablesWithError = downloadImages(tables)
+        tablesWithError = downloadImages(group, tables)
 
         if len(tablesWithError) > 0:
             for tableWithError in tablesWithError:
@@ -54,7 +62,7 @@ def scrap(args):
             if len(tablesWithError) > 0:
                 with open("withError.txt") as fp:
                     tablesWithErrorFromFile = fp.readlines()
-                tablesWithError = downloadImages(tablesWithErrorFromFile)
+                tablesWithError = downloadImages(group, tablesWithErrorFromFile)
                 if len (tablesWithError) > 0:
                     print "still tables with error: "
                     for tableError in tablesWithError:
