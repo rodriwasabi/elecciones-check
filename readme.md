@@ -1,0 +1,2 @@
+# Requisitos
+pip install requests 
