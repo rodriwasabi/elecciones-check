@@ -1,6 +1,10 @@
 import sys, os, re
 import requests
+import time
+from random import seed
+from random import randint, random
 
+seed(1)
 baseUrl = "https://trep.oep.org.bo/resul/imgActa/{0}.jpg"
 
 def downloadImages(group, tables, addSuffixOne):
@@ -12,7 +16,11 @@ def downloadImages(group, tables, addSuffixOne):
                 tableNumber = "{}1".format(tableNumber)
             getUrl = baseUrl.format(tableNumber)
             imageFile = './results/{0}/{1}.jpg'.format(group, tableNumber)
-            print getUrl            
+            
+            value = randint(1, 2)* (1+random())
+            print "{}  ({} secs)".format(getUrl, value)
+            
+            time.sleep(value)            
             # r = requests.get(getUrl, stream=True)
             # if r.status_code == 200:
             #     with open(imageFile, 'wb') as f:

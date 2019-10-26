@@ -1,6 +1,10 @@
 import sys, os, re
 import requests
+import time
+from random import seed
+from random import randint, random
 
+seed(1)
 baseUrl = "https://trep.oep.org.bo/resul/imgActa/{0}.jpg"
 
 def downloadImages(group, tables, addSuffixOne):
@@ -12,18 +16,22 @@ def downloadImages(group, tables, addSuffixOne):
                 tableNumber = "{}1".format(tableNumber)
             getUrl = baseUrl.format(tableNumber)
             imageFile = './results/{0}/{1}.jpg'.format(group, tableNumber)
-            print getUrl            
-            # r = requests.get(getUrl, stream=True)
-            # if r.status_code == 200:
-            #     with open(imageFile, 'wb') as f:
-            #         for chunk in r:
-            #             if 'ERROR' in chunk:
-            #                 print "ReDo needed: {}".format(tableNumber)
-            #                 tablesWithError.append(tableNumber)
-            #             f.write(chunk)
-            #     # Deletes file if it is a file with error
-            #     if tableNumber in tablesWithError:
-            #         os.remove(imageFile)
+            
+            value = randint(1, 2)* (1+random())
+            print "{}  ({} secs)".format(getUrl, value)
+            time.sleep(value)
+
+            r = requests.get(getUrl, stream=True)
+            if r.status_code == 200:
+                with open(imageFile, 'wb') as f:
+                    for chunk in r:
+                        if 'ERROR' in chunk:
+                            print "ReDo needed: {}".format(tableNumber)
+                            tablesWithError.append(tableNumber)
+                        f.write(chunk)
+                # Deletes file if it is a file with error
+                if tableNumber in tablesWithError:
+                    os.remove(imageFile)
 
     return tablesWithError
 
