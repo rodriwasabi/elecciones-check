@@ -31,9 +31,6 @@ def scrap(args):
     path = './mesas/'
     files = []
     
-    with open("withError.txt", 'w') as f:
-        f.write("")
-
     for r, d, f in os.walk(path):
         for file in f:
             if '.mesa' in file:
@@ -48,6 +45,10 @@ def scrap(args):
         print "GRUPO: {}".format(group)
         print "---------------------------------------------"
 
+        errorFile = "./results/{0}/withError.txt".format(group)
+        with open(errorFile, 'w') as f:
+            f.write("")
+
         with open(file) as fp:
             tables = fp.readlines()
 
@@ -55,12 +56,13 @@ def scrap(args):
         tablesWithError = downloadImages(group, tables)
 
         if len(tablesWithError) > 0:
+            
             for tableWithError in tablesWithError:
-                with open("withError.txt", 'a') as f:
+                with open(errorFile, 'a') as f:
                     f.write("{}1\n".format(tableWithError))
 
             if len(tablesWithError) > 0:
-                with open("withError.txt") as fp:
+                with open(errorFile) as fp:
                     tablesWithErrorFromFile = fp.readlines()
                 tablesWithError = downloadImages(group, tablesWithErrorFromFile)
                 if len (tablesWithError) > 0:
